@@ -31,8 +31,7 @@ function loadProducts(products){
         const productName = document.createElement("h3");
         productName.textContent = products[i].name;
         productArticle.appendChild(productName);
-
-        //Ajout de la description raccourcie
+raccourcie
         const productDescription = document.createElement("p");
         productDescription.textContent = products[i].description;
         productArticle.appendChild(productDescription);

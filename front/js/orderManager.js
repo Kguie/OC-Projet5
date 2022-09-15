@@ -1,0 +1,1 @@
+// **Gestion de tout ce qui concerne le paiement,la finalisation de la commande,l'entrée des données du client**//
