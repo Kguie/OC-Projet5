@@ -1,46 +1,74 @@
-// **Gestion du panier, enregistrement d'un article dans le panier, retrait d'un article et récupération du contenu du panier**//
+/**
+ * Gestion du panier, enregistrement d'un article dans le panier, retrait d'un article et récupération du contenu du panier
+ **/
 
 
-//Fonction ajoute un produit au panier
+/**
+ * Fonction qui l'ajout au panier d'un produit en fonction de ses paramères puis son enregistrement dans le local storage
+ * @param {string} id du produit
+ * @param {number} quantité choisie du produit 
+ * @param {string} couleur choisie du produit
+ * @return { object} Ajout du produit avec les paramètres ou modification de la quantité de ce produit si il est déjà présent dans la cartList(le meme id et la meme couleur)
+ */
 export function addProductToCart(productId,productNumber,productColor){
     let cartList = getCart();
     
     //Vérification que le produit ajouté n'est pas déjà dans la liste
-    let productFound = cartList.find(product => product.id == productId & product.color == productColor);
+    let productFound = cartList.find(product => product.id == productId && product.color == productColor);
     //Si le produit ayant le même id et la meme couleur est présent on ajoute la quantité souhaité
-    if( productFound != null){
+    if(!!productFound){
        productFound.quantity = parseInt(productFound.quantity) + parseInt(productNumber);
         saveCart(cartList);
-    //Sinon on ajoute le produit    
     }else{ 
         cartList.push({id: productId, quantity: productNumber, color: productColor});
         saveCart(cartList);
     }
 }
 
-//fonction retirer un produit du panier
+/**
+ * Fonction qui retire un produit du panier en utilisant son id et sa couleur
+ * @param {string} id du produit
+ * @param {string} couleur choisie du produit
+ * @return { object} Effacement du produit du panier puis sauvegarde du changement dans le local storage,ensuite rechargement de la section qui affiche les produits pour afficher le changement
+ */
 export function removeProductFromCart(productId,productColor){
     let cartList = getCart();
-    cartList = cartList.filter(product => !(product.id == productId & product.color == productColor));
+    cartList = cartList.filter(product => !(product.id == productId && product.color == productColor));
     saveCart(cartList);
-      // Effacement de l'écran et regénération de la page avec les articles restant dans le panier
-	document.querySelector("#cart__items").innerHTML = "";
+    document.querySelector("#cart__items").innerHTML = "";
 }
 
-//fonction obtenir la liste du panier
+/**
+ * Fonction qui récupère la cartList à partir du local storage et si elle est n'est pas encore présente,crée une cartList vide 
+ * @return { [objects]} cartList
+ */
 export function getCart(){
     let cartList = localStorage.getItem("cartList");
-    if(cartList == null){
+    if(!cartList){        
         return [];
     }else{
+        isValidJSON(cartList);
         return JSON.parse(cartList);
     }
 }
 
-//Fonction sauvegarder les changements dans le panier
+/**
+ * Fonction qui sauvegarde la cartList de produits choisis dans le local storage
+ * @param {[objects]} produits avec leur quantité,leur nombre et leur couleur
+ */
 export function saveCart(cartList){
     localStorage.setItem("cartList",JSON.stringify(cartList));
 }
 
+//Gestion d'erreur d'exécution au niveau du JSON
+function isValidJSON(txt){
+    try {
+      JSON.parse(txt);
+      return true;
+    } catch(err) {
+        alert("Nous n'avons pas à récupérer votre panier,veuillez réessayer plus tard ou contacter le service client");
+      return false;
+    }
+  }
 
 

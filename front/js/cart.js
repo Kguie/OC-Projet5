@@ -1,10 +1,19 @@
-//**Gère l'affichage et les interactions de la page panier**//
+/**
+ * Gère l'affichage et les interactions de la page panier
+ **/
 
 import { getCart, removeProductFromCart , saveCart } from "./cartManager.js";
 import { getProductById } from "./productManager.js";
+import { totalQuantityCalculation,totalPriceCalculation, orderValidation } from "./orderManager.js";
+import { firstNameIsValid, lastNameIsValid,adressIsValid,cityIsValid,emailIsValid } from "./formManager.js";
 
-//Fonction pour afficher les articles du panier sur la page
+
+/**
+ * Fonction qui charge les articles ajoutés au panier précédemment sur la page panier
+ * @param {[objects]} cartList 
+ */
 async function loadCard(cartList) {
+  
   for (let i = 0; i < cartList.length; i++) {
     //Récupération des caractéristiques du produit dans le panier
     const productId = cartList[i].id;
@@ -97,10 +106,12 @@ async function loadCard(cartList) {
   }
   deleteButtonEventListener();
   changeQuantity();
+  totalQuantityCalculation();
+  totalPriceCalculation();
 }
 
 
-///////////Ajout des eventsListener///////////
+/*Ajout des eventsListener*/
 
 //Ajout de l'eventListener pour les boutons supprimer et de la fonction pour supprimer un produit
 async function deleteButtonEventListener(){
@@ -112,40 +123,125 @@ async function deleteButtonEventListener(){
       const productId = deleteButtons[i].parentNode.parentNode.parentNode.parentNode.dataset.id;
       const productColor = deleteButtons[i].parentNode.parentNode.parentNode.parentNode.dataset.color;
       
-      //Suppression du produit avec génération d'une alerte
+      //Suppression du produit 
       removeProductFromCart(productId, productColor);
-      alert("Votre article a bien été supprimé") ;
-      
-      // Effacement de l'écran et regénération de la page avec les articles restant dans le panier
+     
+      // Effacement de l'écran et regénération de la page avec les articles restant dans le panier avec 
       cartList = getCart();
-      await loadCard(cartList);      
+      await loadCard(cartList); 
+      
+      //génération d'une alerte
+      alert("Votre article a bien été supprimé") ;
+           
     });
   }
 }
 
 //Ajout de l'enventListener pour modifier la quantité
-function changeQuantity(){
+async function changeQuantity(){
   const quantityInputs = document.querySelectorAll('.itemQuantity');
+
   for (let i = 0; i < quantityInputs.length; i++) {
-    quantityInputs[i].addEventListener('input', function(){
+    quantityInputs[i].addEventListener('input',async function(){
       
       //Récupération des id ,couleur sur la balise article parente de l'input
-      const productId = quantityInputs[i].parentNode.parentNode.parentNode.parentNode.dataset.id;
-      const productColor = quantityInputs[i].parentNode.parentNode.parentNode.parentNode.dataset.color;
+      const productId = quantityInputs[i].closest("article").dataset.id;
+      const productColor = quantityInputs[i].closest("article").dataset.color;
       
       //Récupération du produit dont on veut modifier la quantité et sauvegarde du panier
-      const cartList = getCart();
+      let cartList = getCart();
       let productFound = cartList.find(product => product.id == productId & product.color == productColor);
-      productFound.quantity = quantityInputs[i].value;
       
-      saveCart(cartList);
-      alert("Votre changement a bien été pris en compte");
+
+      //Ajout d'une condition au cas où l'utilisateur rentre 0 comme quantité
+      if (quantityInputs[i].value == 0){
+        //Suppression du produit avec génération d'une alerte
+        removeProductFromCart(productId, productColor);
+        
+        // Effacement de l'écran et regénération de la page avec les articles restant dans le panier
+        cartList = getCart();
+        await loadCard(cartList);
+        alert("Votre article a bien été supprimé") ;      
+      
+      }else{
+        productFound.quantity = quantityInputs[i].value;
+        saveCart(cartList);
+
+        //Réinitialisation  du contenu de  la balise pour recalculer la quantité et le prix total
+        document.querySelector("#totalQuantity").textContent = "";
+        document.querySelector("#totalPrice").textContent = "";
+        totalQuantityCalculation();
+        totalPriceCalculation();
+        alert("Votre changement a bien été pris en compte");
+      }
     });
   }
 }
 
 
-////////Lancement de la page
+//Ajout des eventsListener pour le formulaire
+//Vérification du prénom avec l'event change au niveau de son input
+document.querySelector("#firstName").addEventListener("change",function(){
+  document.querySelector("#firstNameErrorMsg").textContent = "";
+  firstNameIsValid()
+});
+//Vérification du nom avec l'event change au niveau de son input
+document.querySelector("#lastName").addEventListener("change",function(){
+  document.querySelector("#lastNameErrorMsg").textContent = "";
+  lastNameIsValid()
+});
+//Vérification de l'adresse avec l'event change au niveau de son input
+document.querySelector("#address").addEventListener("change",function(){
+  document.querySelector("#addressErrorMsg").textContent = "";
+  adressIsValid()
+});
+//Vérification de la ville avec l'event change au niveau de son input
+document.querySelector("#city").addEventListener("change",function(){
+  document.querySelector("#cityErrorMsg").textContent = "";
+  cityIsValid()
+});
+//Vérification du mail avec l'event change au niveau de son input
+document.querySelector("#email").addEventListener("change",function(){
+  document.querySelector("#emailErrorMsg").textContent = "";
+  emailIsValid()
+});
+//Event du bouton commander au clic qui effectue de nouveau les vérifications précédentes et exécute la fonction si tout est validé
+document.querySelector("#order").addEventListener("click",function(){
+  let firstNameTest = firstNameIsValid();
+  let lastNameTest = lastNameIsValid();
+  let adressTest = adressIsValid();
+  let cityTest = cityIsValid();
+  let emailTest = emailIsValid();
+  if((firstNameTest == true)&&(lastNameTest == true)&&(emailTest == true)&&(cityTest == true)&&(adressTest == true)){
+    
+    orderValidation();
+    alert("Votre commande a bien été validée");
+    return 1;    
+  }else{
+    alert("Votre commande n'a pas pu être validée, veuillez vérifier que votre formulaire de contact est correctement rempli")
+    return 0;
+  }
+  
+});
+
+/*Lancement de la page*/
+
 let cartList = getCart();
+if (cartList.length == 0){
+  alert("Votre panier est vide");
+}else{
 loadCard(cartList);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
