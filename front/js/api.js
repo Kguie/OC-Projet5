@@ -13,13 +13,11 @@ export async function getProducts(url) {
     try {
         let response = await fetch(url);
         let products = await response.json();
+        return products;
     } catch (err) {
         alert("Nous n'avons pas réussi à récupérer les produits disponibles,veuillez réessayer plus tard ou contacter le service client");
+        return [];
     }
-    let response = await fetch(url);
-    let products = await response.json();
-    return products;
-
 }
 
 
@@ -34,31 +32,9 @@ export async function getProductById(id) {
     try {
         let response = await fetch("http://localhost:3000/api/products/" + id);
         let product = await response.json();
+        return product;
     } catch (err) {
         alert("Nous n'avons pas réussi à trouver le produit sélectionné,veuillez réessayer plus tard ou contacter le service client");
-    };
-
-    let response = await fetch("http://localhost:3000/api/products/" + id);
-    let product = await response.json();
-    return product;
-};
-
-
-/**
- * Fonction qui crée les options pour chaque sélecteur de couleurs disponibles en fonction des couleurs disponibles dans l'object de chaque produit
- * @param {string} colors,couleurs disponibles pour chacun des produit 
- */
-export function colorSelector(colors) {
-    for (let i = 0; i < colors.length; i++) {
-
-        //Création de la balise option
-        const colorOption = document.createElement("option");
-
-        //Attribution des valeurs et du texte
-        colorOption.setAttribute("value", colors[i]);
-        colorOption.textContent = colors[i];
-
-        //Attachement au DOM
-        document.querySelector("#colors").appendChild(colorOption);
+        return [];
     }
-}
+};

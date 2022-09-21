@@ -2,10 +2,10 @@
  * Gère l'affichage et les interactions de la page panier
  **/
 
-import { getCart, removeProductFromCart , saveCart } from "./cartManager.js";
-import { getProductById } from "./productManager.js";
-import { totalQuantityCalculation,totalPriceCalculation, orderValidation } from "./orderManager.js";
-import { firstNameIsValid, lastNameIsValid,adressIsValid,cityIsValid,emailIsValid } from "./formManager.js";
+import { getCart, removeProductFromCart, saveCart } from "./cartManager.js";
+import { getProductById } from "./api.js";
+import { totalQuantityCalculation, totalPriceCalculation, } from "./orderManager.js";
+import { firstNameIsValid, lastNameIsValid, adressIsValid, cityIsValid, emailIsValid } from "./formManager.js";
 
 
 /**
@@ -13,7 +13,7 @@ import { firstNameIsValid, lastNameIsValid,adressIsValid,cityIsValid,emailIsVali
  * @param {[objects]} cartList 
  */
 async function loadCard(cartList) {
-  
+
   for (let i = 0; i < cartList.length; i++) {
     //Récupération des caractéristiques du produit dans le panier
     const productId = cartList[i].id;
@@ -111,59 +111,59 @@ async function loadCard(cartList) {
 }
 
 
-/*Ajout des eventsListener*/
+//Ajout des event listener
 
 //Ajout de l'eventListener pour les boutons supprimer et de la fonction pour supprimer un produit
-async function deleteButtonEventListener(){
+async function deleteButtonEventListener() {
   const deleteButtons = document.querySelectorAll(".cart__item__content__settings__delete .deleteItem");
   for (let i = 0; i < deleteButtons.length; i++) {
-    deleteButtons[i].addEventListener("click",async function(){
-      
+    deleteButtons[i].addEventListener("click", async function () {
+
       //Récupération des id et couleur sur la balise article parente du boutton supprimer
       const productId = deleteButtons[i].parentNode.parentNode.parentNode.parentNode.dataset.id;
       const productColor = deleteButtons[i].parentNode.parentNode.parentNode.parentNode.dataset.color;
-      
+
       //Suppression du produit 
       removeProductFromCart(productId, productColor);
-     
+
       // Effacement de l'écran et regénération de la page avec les articles restant dans le panier avec 
       cartList = getCart();
-      await loadCard(cartList); 
-      
+      await loadCard(cartList);
+
       //génération d'une alerte
-      alert("Votre article a bien été supprimé") ;
-           
+      alert("Votre article a bien été supprimé");
+
     });
   }
 }
 
 //Ajout de l'enventListener pour modifier la quantité
-async function changeQuantity(){
+async function changeQuantity() {
   const quantityInputs = document.querySelectorAll('.itemQuantity');
 
   for (let i = 0; i < quantityInputs.length; i++) {
-    quantityInputs[i].addEventListener('input',async function(){
-      
+    quantityInputs[i].addEventListener('input', async function () {
+
       //Récupération des id ,couleur sur la balise article parente de l'input
       const productId = quantityInputs[i].closest("article").dataset.id;
       const productColor = quantityInputs[i].closest("article").dataset.color;
-      
+
       //Récupération du produit dont on veut modifier la quantité et sauvegarde du panier
       let cartList = getCart();
       let productFound = cartList.find(product => product.id == productId & product.color == productColor);
-      
+
 
       //Ajout d'une condition au cas où l'utilisateur rentre 0 comme quantité
-      if (quantityInputs[i].value == 0){
+      if (quantityInputs[i].value == 0) {
         //Suppression du produit avec génération d'une alerte
         removeProductFromCart(productId, productColor);
-        
+
         // Effacement de l'écran et regénération de la page avec les articles restant dans le panier
         cartList = getCart();
         await loadCard(cartList);
-        alert("Votre article a bien été supprimé") ;      
-      
-      }else{
+        alert("Votre article a bien été supprimé");
+
+      } else {
         productFound.quantity = quantityInputs[i].value;
         saveCart(cartList);
 
@@ -181,67 +181,89 @@ async function changeQuantity(){
 
 //Ajout des eventsListener pour le formulaire
 //Vérification du prénom avec l'event change au niveau de son input
-document.querySelector("#firstName").addEventListener("change",function(){
+document.querySelector("#firstName").addEventListener("change", function () {
   document.querySelector("#firstNameErrorMsg").textContent = "";
   firstNameIsValid()
 });
 //Vérification du nom avec l'event change au niveau de son input
-document.querySelector("#lastName").addEventListener("change",function(){
+document.querySelector("#lastName").addEventListener("change", function () {
   document.querySelector("#lastNameErrorMsg").textContent = "";
   lastNameIsValid()
 });
 //Vérification de l'adresse avec l'event change au niveau de son input
-document.querySelector("#address").addEventListener("change",function(){
+document.querySelector("#address").addEventListener("change", function () {
   document.querySelector("#addressErrorMsg").textContent = "";
   adressIsValid()
 });
 //Vérification de la ville avec l'event change au niveau de son input
-document.querySelector("#city").addEventListener("change",function(){
+document.querySelector("#city").addEventListener("change", function () {
   document.querySelector("#cityErrorMsg").textContent = "";
   cityIsValid()
 });
 //Vérification du mail avec l'event change au niveau de son input
-document.querySelector("#email").addEventListener("change",function(){
+document.querySelector("#email").addEventListener("change", function () {
   document.querySelector("#emailErrorMsg").textContent = "";
   emailIsValid()
 });
 //Event du bouton commander au clic qui effectue de nouveau les vérifications précédentes et exécute la fonction si tout est validé
-document.querySelector("#order").addEventListener("click",function(){
+document.querySelector("#order").addEventListener("click", function (event) {
+  event.preventDefault();
   let firstNameTest = firstNameIsValid();
   let lastNameTest = lastNameIsValid();
   let adressTest = adressIsValid();
   let cityTest = cityIsValid();
   let emailTest = emailIsValid();
-  if((firstNameTest == true)&&(lastNameTest == true)&&(emailTest == true)&&(cityTest == true)&&(adressTest == true)){
-    
+  if ((firstNameTest == true) && (lastNameTest == true) && (emailTest == true) && (cityTest == true) && (adressTest == true)) {
     orderValidation();
-    alert("Votre commande a bien été validée");
-    return 1;    
-  }else{
+  } else {
     alert("Votre commande n'a pas pu être validée, veuillez vérifier que votre formulaire de contact est correctement rempli")
     return 0;
   }
-  
 });
 
-/*Lancement de la page*/
-
+//Lancement de la page
 let cartList = getCart();
-if (cartList.length == 0){
+if (cartList.length == 0) {
   alert("Votre panier est vide");
-}else{
-loadCard(cartList);
+} else {
+  loadCard(cartList);
 }
 
+/**
+ * Fonction qui envoie l'objet contact et la liste des Id à l'api et ouvre la page confirmation
+ * @return { string|error } Lance la page de confirmation en fonction du numéro de commande
+ */
+async function orderValidation() {
+  //Récupération des des données du formulaire et création de l'objet contact
+  const contact = {
+    firstName: document.querySelector("#firstName").value,
+    lastName: document.querySelector("#lastName").value,
+    address: document.querySelector("#address").value,
+    city: document.querySelector("#city").value,
+    email: document.querySelector("#email").value
+  }
 
+  //Récupération des id des produits du panier de l'utilisateur
+  let cartProducts = document.querySelectorAll(".cart__item");
+  let products = [];
+  for (let i = 0; i < cartProducts.length; i++) {
+    products.push(cartProducts[i].dataset.id)
+  }
 
+  const orderJSON = JSON.stringify({ contact, products });
+  const fetchSettings = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    "body": orderJSON
+  }
+  //Envoi à l'API
 
-
-
-
-
-
-
-
-
-
+  const response = await fetch("http://localhost:3000/api/products/order", fetchSettings);
+  if (!response.ok) {
+    alert("Votre commande n'a pas pu être transmise")
+    return;
+  }
+  const result = await response.json();
+  const id = result.orderId;
+  window.open("./confirmation.html?orderId=" + id, "_self")
+}

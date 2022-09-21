@@ -2,14 +2,15 @@
  * Gère l'affichage et les interactions de la page produit
  **/
 
-import { getProductById, colorSelector } from "./productManager.js";
-import{ addProductToCart} from "./cartManager.js";
+import { getProductById } from "./api.js";
+import { colorSelector } from "./utils.js";
+import { addProductToCart } from "./cartManager.js";
 
 /**
  * Fonction qui charge toutes les caractéristiques du produit dans la page du dit produit
  * @param {string} id du produit avec toutes ses caractristiques 
  */
-async function loadDetailedProduct(productId){
+async function loadDetailedProduct(productId) {
     const product = await getProductById(productId);
 
     //Balise title qui contiendra le produit
@@ -28,38 +29,39 @@ async function loadDetailedProduct(productId){
 
     //Ajout de sélecteurs pour les couleurs grâce à la fonction
     let colors = product.colors;
-    colorSelector(colors);
-} 
+    let location = document.querySelector("#colors");
+    colorSelector(colors, location);
+}
 
-/*Affichage de la page en fonction du produit*/
 
+//Affichage de la page en fonction du produit
 //Récupération de l'URL de la page
 let str = window.location.href;
 
 //Recherche de l' id produit par rapport à l'url de la page
 let url = new URL(str);
-let search_params = new URLSearchParams(url.search); 
-if(search_params.has("id")) {
+let search_params = new URLSearchParams(url.search);
+if (search_params.has("id")) {
     let productId = search_params.get("id");
-    
-    loadDetailedProduct(productId);     
-    
+
+    loadDetailedProduct(productId);
+
     //Ajout de l'eventListener sur le bouton "ajouter au panier" pour pouvoir ajouter un article au panier si les conditions sont remplies  
-    document.querySelector("#addToCart").addEventListener("click", function(){        
+    document.querySelector("#addToCart").addEventListener("click", function () {
         //Récupération de la quantité et de la couleur
         const productNumber = document.querySelector("#quantity").value;
         const productColor = document.querySelector("#colors").value;
-        
+
         //Conditions pour que l'ajout d'un article soit validé ou refusé
-        if(productNumber == 0){
+        if (productNumber == 0) {
             alert("Veuillez choisir un nombre d'article");
             return 0;
-        
-        }else if (productColor == ""){
+
+        } else if (productColor == "") {
             alert("Veuillez choisir une couleur");
             return 0;
-        }else{            
-            addProductToCart(productId,productNumber,productColor)
+        } else {
+            addProductToCart(productId, productNumber, productColor)
             alert("Votre ajout a bien été pris en compte");
             return 1;
         }

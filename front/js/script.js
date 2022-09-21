@@ -2,7 +2,7 @@
  * Gère l'affichage et les interactions de la page d'accueil
  **/
 
-import { getProducts } from "./productManager.js";
+import { getProducts } from "./api.js";
 
 
 /**
