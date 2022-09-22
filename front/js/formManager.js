@@ -200,7 +200,7 @@ export function emailIsValid() {
         document.querySelector("#emailErrorMsg").innerHTML = "Veuillez entrer au maximum 20 caractères s.v.p. par partie de l'adresse mail ";
         return 0;
     } if (unauthorizedTest == true) {
-        document.querySelector("#emailErrorMsg").innerHTML = "Les lettres et chiffres sont autorisées ainsi que les caractères spéciaux suivants:<br> ! # $ % & ' * + = ? ^ _ ` ~ -";
+        document.querySelector("#emailErrorMsg").innerHTML = "Les lettres et chiffres sont autorisées ainsi que les caractères spéciaux suivants:<br> ! # $ % & ' * + = ? ^ _ ` ~ - @ .";
         return 0;
     } if (oneTimeAuthorizedTest == true) {
         document.querySelector("#emailErrorMsg").innerHTML = "Les caractères '@' et '.' ne peuvent être utilisés qu'une seule fois";
@@ -208,7 +208,7 @@ export function emailIsValid() {
     } if (emailTest == true) {
         return 1;
     } else {
-        document.querySelector("#emailErrorMsg").innerHTML = "Veuillez vérifier que votre adresse mail est au bon format adresse@mail.com avec une longueur maximale de 20 caractères par partie";
+        document.querySelector("#emailErrorMsg").innerHTML = "Veuillez vérifier que votre adresse mail est au bon format adresse@mail.com";
         return 0;
     }
 }
