@@ -6,8 +6,8 @@ import { getProducts } from "./api.js";
 
 
 /**
- * Fonction qui génère les cartes produits sur l'index à partir de l'API
- * @param {[Objects]} produits avec toutes leurs caractristiques * 
+ * Fonction qui génère les cartes produits sur l'index 
+ * @param {[Objects]} liste de produits avec toutes leurs caractristiques * 
  */
 function loadProducts(products) {
     for (let i = 0; i < products.length; i++) {
@@ -42,10 +42,8 @@ function loadProducts(products) {
 }
 
 
-/*Chargement de la page*/
-// Récupération des produits depuis l'API HTTP
+//Récupération et affichage des produits
 const url = "http://localhost:3000/api/products/";
 let products = await getProducts(url);
 
-//Affichage des produits
 loadProducts(products);

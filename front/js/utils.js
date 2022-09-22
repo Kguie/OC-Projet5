@@ -1,5 +1,8 @@
 /**
- * Fonction qui crée les options pour chaque sélecteur de couleurs disponibles en fonction des couleurs disponibles dans l'object de chaque produit
+ * Gestion des fonctions utilitaires
+
+/**
+ * Fonction qui crée les options pour chaque sélecteur en fonction des couleurs disponibles dans l'objet de chaque produit
  * @param {string} colors,couleurs disponibles pour chacun des produit 
  * @param {string}location,élément select parent dans le DOM où doit être attaché la ou les options de couleur
  */
@@ -15,5 +18,20 @@ export function colorSelector(colors, location) {
 
         //Attachement au DOM
         location.appendChild(colorOption);
+    }
+}
+
+/**
+ * Fonction qui vérifie la validité de l'objet  au format JSON
+ * @param {JSON} 
+ * @return {boolean} 
+ */
+export function isValidJSON(txt) {
+    try {
+        JSON.parse(txt);
+        return true;
+    } catch (err) {
+        alert("Nous n'avons pas à récupérer votre panier,veuillez réessayer plus tard ou contacter le service client");
+        return false;
     }
 }

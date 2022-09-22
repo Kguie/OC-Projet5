@@ -1,5 +1,5 @@
 /**
- * Gestion des produits en objet
+ * Gestion des appels API
  **/
 
 
@@ -38,3 +38,25 @@ export async function getProductById(id) {
         return [];
     }
 };
+
+
+/**
+ * Fonction qui envoie la commande dans l'API et récupère le numéro de commande 
+ * @param {JSON} orderBody au format JSON composé des id des produits souhaités et du formulaire contact
+ * @return { string|error } récupère le numéro de commande dans la réponse de l'API
+ */
+export async function postOrder(orderBody) {
+    const fetchSettings = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        "body": orderBody
+    }
+    const response = await fetch("http://localhost:3000/api/products/order", fetchSettings);
+    if (!response.ok) {
+        alert("Votre commande n'a pas pu être transmise,veuillez réessayer plus tard ou contacter le service client")
+        return;
+    }
+    const result = await response.json();
+    const id = result.orderId;
+    return id;
+}

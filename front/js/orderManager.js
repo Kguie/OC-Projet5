@@ -1,10 +1,10 @@
 /**
- * Gestion de tout ce qui concerne le paiement,son calcul ,la finalisation de la commande
+ * Gestion de tout ce qui concerne le paiement , son calcul et la création d'objets pour la commande 
  **/
 
 
 /**
- * Fonction qui calcule la quantité total en utilisant les quantités  présentes sur la page 
+ * Fonction qui calcule la quantité totale en utilisant les quantités  présentes sur la page 
  * @return { number } quantité totale
  */
 export function totalQuantityCalculation() {
@@ -17,12 +17,11 @@ export function totalQuantityCalculation() {
         quantityList.push(quantityInputs[i].value);
     }
 
-    //Addition de toutes les valeurs dans la liste avec parseInt pour être sur d'additionner des nombres
+    //Addition de toutes les valeurs dans la liste avec parseInt 
     let totalQuantity = quantityList.reduce((previousValue, currentValue) =>
         parseInt(previousValue) + parseInt(currentValue), 0
     );
 
-    //Affichage du résultat dans la balise totalQuantity
     document.querySelector("#totalQuantity").textContent = totalQuantity;
 }
 
@@ -55,6 +54,30 @@ export function totalPriceCalculation() {
         previousValue + currentValue, 0
     );
 
-    //Affichage du résultat dans la balise totalQuantity
     document.querySelector("#totalPrice").textContent = totalPrice;
+}
+
+/**
+ * Fonction qui crée l'objet contact contact et la liste d'id en et les passant au format JSON en prévision du post API
+ * @return { JSON } constituera le body lors du fetch post
+ */
+export function createOrderBody() {
+    //Récupération des des données du formulaire et création de l'objet contact à l'aide de la fonction trim pour éliminer l'espace antérieure et postérieure
+    const contact = {
+        firstName: (document.querySelector("#firstName").value).trim(),
+        lastName: (document.querySelector("#lastName").value).trim(),
+        address: (document.querySelector("#address").value).trim(),
+        city: (document.querySelector("#city").value).trim(),
+        email: (document.querySelector("#email").value)
+    }
+
+    //Récupération des id des produits du panier de l'utilisateur
+    let cartProducts = document.querySelectorAll(".cart__item");
+    let products = [];
+    for (let i = 0; i < cartProducts.length; i++) {
+        products.push(cartProducts[i].dataset.id)
+    }
+
+    const orderJSON = JSON.stringify({ contact, products });
+    return orderJSON;
 }

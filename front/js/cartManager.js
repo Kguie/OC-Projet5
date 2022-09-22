@@ -2,13 +2,14 @@
  * Gestion du panier, enregistrement d'un article dans le panier, retrait d'un article et récupération du contenu du panier
  **/
 
+import { isValidJSON } from "./utils.js";
 
 /**
- * Fonction qui l'ajout au panier d'un produit en fonction de ses paramères puis son enregistrement dans le local storage
+ * Fonction qui permet l'ajout au panier d'un produit et son enregistrement dans le local storage
+ * Il y aura juste une modification de la quantité de ce produit si il est déjà présent dans la cartList(le meme id et la meme couleur)
  * @param {string} id du produit
  * @param {number} quantité choisie du produit 
  * @param {string} couleur choisie du produit
- * @return { object} Ajout du produit avec les paramètres ou modification de la quantité de ce produit si il est déjà présent dans la cartList(le meme id et la meme couleur)
  */
 export function addProductToCart(productId, productNumber, productColor) {
     let cartList = getCart();
@@ -26,10 +27,9 @@ export function addProductToCart(productId, productNumber, productColor) {
 }
 
 /**
- * Fonction qui retire un produit du panier en utilisant son id et sa couleur
+ * Fonction qui efface un produit du panier ,puis sauvegarde le changement dans le local storage,ensuite rechargement de la section qui affiche les produits afin d'afficher le changement
  * @param {string} id du produit
  * @param {string} couleur choisie du produit
- * @return { object} Effacement du produit du panier puis sauvegarde du changement dans le local storage,ensuite rechargement de la section qui affiche les produits, pour afficher le changement
  */
 export function removeProductFromCart(productId, productColor) {
     let cartList = getCart();
@@ -39,8 +39,8 @@ export function removeProductFromCart(productId, productColor) {
 }
 
 /**
- * Fonction qui récupère la cartList à partir du local storage et si elle est n'est pas encore présente,crée une cartList vide 
- * @return { [objects]} cartList
+ * Fonction qui récupère la liste du panier à partir du local storage ,et si elle n'est pas encore présente,crée une cartList vide 
+ * @return { [objects]} cartList en JS
  */
 export function getCart() {
     let cartList = localStorage.getItem("cartList");
@@ -53,26 +53,13 @@ export function getCart() {
 }
 
 /**
- * Fonction qui sauvegarde la cartList de produits choisis dans le local storage
+ * Fonction qui sauvegarde la liste de produits choisis dans le local storage
  * @param {[objects]} produits avec leur quantité,leur nombre et leur couleur
  */
 export function saveCart(cartList) {
     localStorage.setItem("cartList", JSON.stringify(cartList));
 }
 
-/**
- * Fonction qui vérifie la validité de l'objet  au format JSON
- * @param {[objects]} txt
- * @return {boolean} 
- */
-function isValidJSON(txt) {
-    try {
-        JSON.parse(txt);
-        return true;
-    } catch (err) {
-        alert("Nous n'avons pas à récupérer votre panier,veuillez réessayer plus tard ou contacter le service client");
-        return false;
-    }
-}
+
 
 

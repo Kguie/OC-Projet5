@@ -43,9 +43,7 @@ let url = new URL(str);
 let search_params = new URLSearchParams(url.search);
 if (search_params.has("id")) {
     let productId = search_params.get("id");
-
-    loadDetailedProduct(productId);
-
+    await loadDetailedProduct(productId);
     //Ajout de l'eventListener sur le bouton "ajouter au panier" pour pouvoir ajouter un article au panier si les conditions sont remplies  
     document.querySelector("#addToCart").addEventListener("click", function () {
         //Récupération de la quantité et de la couleur
@@ -53,8 +51,8 @@ if (search_params.has("id")) {
         const productColor = document.querySelector("#colors").value;
 
         //Conditions pour que l'ajout d'un article soit validé ou refusé
-        if (productNumber == 0) {
-            alert("Veuillez choisir un nombre d'article");
+        if (productNumber == 0 || productNumber > 100) {
+            alert("Veuillez choisir un nombre d'article compris entre 1 et 100");
             return 0;
 
         } else if (productColor == "") {
@@ -66,5 +64,7 @@ if (search_params.has("id")) {
             return 1;
         }
     });
+} else {
+    alert("Nous n'avons pas réussi à trouver le produit sélectionné,veuillez réessayer plus tard ou contacter le service client");
 }
 

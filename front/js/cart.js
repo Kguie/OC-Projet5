@@ -3,8 +3,8 @@
  **/
 
 import { getCart, removeProductFromCart, saveCart } from "./cartManager.js";
-import { getProductById } from "./api.js";
-import { totalQuantityCalculation, totalPriceCalculation, } from "./orderManager.js";
+import { getProductById, postOrder } from "./api.js";
+import { totalQuantityCalculation, totalPriceCalculation, createOrderBody } from "./orderManager.js";
 import { firstNameIsValid, lastNameIsValid, adressIsValid, cityIsValid, emailIsValid } from "./formManager.js";
 
 
@@ -20,7 +20,7 @@ async function loadCard(cartList) {
     const productNumber = cartList[i].quantity;
     const productColor = cartList[i].color;
 
-    //récupération des autres caractéristiques du produit depuis l'API
+    //Récupération des autres caractéristiques du produit depuis l'API
     const product = await getProductById(productId);
 
     //Création de la div article qui contiendra la carte du produit avec ajout d'un data id et color
@@ -104,8 +104,8 @@ async function loadCard(cartList) {
     productDelete.textContent = "Supprimer";
     productDeleteContainer.appendChild(productDelete);
   }
-  deleteButtonEventListener();
-  changeQuantity();
+  await deleteButtonEventListener();
+  await changeQuantity();
   totalQuantityCalculation();
   totalPriceCalculation();
 }
@@ -113,7 +113,10 @@ async function loadCard(cartList) {
 
 //Ajout des event listener
 
-//Ajout de l'eventListener pour les boutons supprimer et de la fonction pour supprimer un produit
+/**
+ * Fonction qui ajoute au texte supprimer l'eventListener qui entraine la suppression du produit lors du clic
+ * Relance le chargement des articles restants dans le panier après la supression
+ */
 async function deleteButtonEventListener() {
   const deleteButtons = document.querySelectorAll(".cart__item__content__settings__delete .deleteItem");
   for (let i = 0; i < deleteButtons.length; i++) {
@@ -123,26 +126,26 @@ async function deleteButtonEventListener() {
       const productId = deleteButtons[i].parentNode.parentNode.parentNode.parentNode.dataset.id;
       const productColor = deleteButtons[i].parentNode.parentNode.parentNode.parentNode.dataset.color;
 
-      //Suppression du produit 
       removeProductFromCart(productId, productColor);
 
-      // Effacement de l'écran et regénération de la page avec les articles restant dans le panier avec 
       cartList = getCart();
       await loadCard(cartList);
-
-      //génération d'une alerte
       alert("Votre article a bien été supprimé");
-
     });
   }
 }
 
-//Ajout de l'enventListener pour modifier la quantité
+/**
+ * Fonction qui permet de modifier la quantité de produit sur l'input document.querySelectorAll('.itemQuantity')
+ * Entraine la supression du produit si la quantité passe à 0
+ * Relance le chargement de des articles après supression
+ * Relance le clalcul et l'affichage de la quantité totale et du prix total après modification
+ */
 async function changeQuantity() {
   const quantityInputs = document.querySelectorAll('.itemQuantity');
 
   for (let i = 0; i < quantityInputs.length; i++) {
-    quantityInputs[i].addEventListener('input', async function () {
+    quantityInputs[i].addEventListener('change', async function () {
 
       //Récupération des id ,couleur sur la balise article parente de l'input
       const productId = quantityInputs[i].closest("article").dataset.id;
@@ -152,27 +155,20 @@ async function changeQuantity() {
       let cartList = getCart();
       let productFound = cartList.find(product => product.id == productId & product.color == productColor);
 
-
-      //Ajout d'une condition au cas où l'utilisateur rentre 0 comme quantité
       if (quantityInputs[i].value == 0) {
-        //Suppression du produit avec génération d'une alerte
         removeProductFromCart(productId, productColor);
 
-        // Effacement de l'écran et regénération de la page avec les articles restant dans le panier
         cartList = getCart();
         await loadCard(cartList);
         alert("Votre article a bien été supprimé");
-
       } else {
         productFound.quantity = quantityInputs[i].value;
         saveCart(cartList);
 
-        //Réinitialisation  du contenu de  la balise pour recalculer la quantité et le prix total
         document.querySelector("#totalQuantity").textContent = "";
         document.querySelector("#totalPrice").textContent = "";
         totalQuantityCalculation();
         totalPriceCalculation();
-        alert("Votre changement a bien été pris en compte");
       }
     });
   }
@@ -205,8 +201,9 @@ document.querySelector("#email").addEventListener("change", function () {
   document.querySelector("#emailErrorMsg").textContent = "";
   emailIsValid()
 });
-//Event du bouton commander au clic qui effectue de nouveau les vérifications précédentes et exécute la fonction si tout est validé
-document.querySelector("#order").addEventListener("click", function (event) {
+
+//Event du bouton commander au clic qui effectue de nouveau les vérifications précédentes et exécute la validation et l'envoi de la commande si tout est validé avec l'ouverture de la page confirmation à la fin
+document.querySelector("#order").addEventListener("click", async function (event) {
   event.preventDefault();
   let firstNameTest = firstNameIsValid();
   let lastNameTest = lastNameIsValid();
@@ -214,56 +211,23 @@ document.querySelector("#order").addEventListener("click", function (event) {
   let cityTest = cityIsValid();
   let emailTest = emailIsValid();
   if ((firstNameTest == true) && (lastNameTest == true) && (emailTest == true) && (cityTest == true) && (adressTest == true)) {
-    orderValidation();
+    const orderJson = createOrderBody();
+    const id = await postOrder(orderJson);
+    //Ouverture de la page confirmation avec l'order id
+    window.open("./confirmation.html?orderId=" + id, "_self");
+    //Effaçage du panier
+    localStorage.clear();
   } else {
     alert("Votre commande n'a pas pu être validée, veuillez vérifier que votre formulaire de contact est correctement rempli")
     return 0;
   }
 });
 
+
 //Lancement de la page
 let cartList = getCart();
 if (cartList.length == 0) {
   alert("Votre panier est vide");
 } else {
-  loadCard(cartList);
-}
-
-/**
- * Fonction qui envoie l'objet contact et la liste des Id à l'api et ouvre la page confirmation
- * @return { string|error } Lance la page de confirmation en fonction du numéro de commande
- */
-async function orderValidation() {
-  //Récupération des des données du formulaire et création de l'objet contact
-  const contact = {
-    firstName: document.querySelector("#firstName").value,
-    lastName: document.querySelector("#lastName").value,
-    address: document.querySelector("#address").value,
-    city: document.querySelector("#city").value,
-    email: document.querySelector("#email").value
-  }
-
-  //Récupération des id des produits du panier de l'utilisateur
-  let cartProducts = document.querySelectorAll(".cart__item");
-  let products = [];
-  for (let i = 0; i < cartProducts.length; i++) {
-    products.push(cartProducts[i].dataset.id)
-  }
-
-  const orderJSON = JSON.stringify({ contact, products });
-  const fetchSettings = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    "body": orderJSON
-  }
-  //Envoi à l'API
-
-  const response = await fetch("http://localhost:3000/api/products/order", fetchSettings);
-  if (!response.ok) {
-    alert("Votre commande n'a pas pu être transmise")
-    return;
-  }
-  const result = await response.json();
-  const id = result.orderId;
-  window.open("./confirmation.html?orderId=" + id, "_self")
+  await loadCard(cartList);
 }
