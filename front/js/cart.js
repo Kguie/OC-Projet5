@@ -210,16 +210,20 @@ document.querySelector("#order").addEventListener("click", async function (event
   let addressTest = addressIsValid();
   let cityTest = cityIsValid();
   let emailTest = emailIsValid();
-  if ((firstNameTest == true) && (lastNameTest == true) && (emailTest == true) && (cityTest == true) && (addressTest == true)) {
+  let cartList = getCart();
+  if (cartList.length == 0) {
+    alert("Votre panier est vide")
+    return 0;
+  } if ((firstNameTest == false) || (lastNameTest == false) || (emailTest == false) || (cityTest == false) || (addressTest == false)) {
+    alert("Votre commande n'a pas pu être validée, veuillez vérifier que votre formulaire de contact est correctement rempli")
+    return 0;
+  } if ((firstNameTest == true) && (lastNameTest == true) && (emailTest == true) && (cityTest == true) && (addressTest == true) && (cartList.length > 0)) {
     const orderJson = createOrderBody();
     const id = await postOrder(orderJson);
     //Ouverture de la page confirmation avec l'order id
     window.open("./confirmation.html?orderId=" + id, "_self");
     //Effaçage du panier
     localStorage.clear();
-  } else {
-    alert("Votre commande n'a pas pu être validée, veuillez vérifier que votre formulaire de contact est correctement rempli")
-    return 0;
   }
 });
 
