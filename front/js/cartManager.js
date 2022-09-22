@@ -59,7 +59,3 @@ export function getCart() {
 export function saveCart(cartList) {
     localStorage.setItem("cartList", JSON.stringify(cartList));
 }
-
-
-
-

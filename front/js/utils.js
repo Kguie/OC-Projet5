@@ -3,20 +3,19 @@
 
 /**
  * Fonction qui crée les options pour chaque sélecteur en fonction des couleurs disponibles dans l'objet de chaque produit
+ * Crée la balise option
+ * Leur attribue une valeur et un texte
+ * Attache au DOM
  * @param {string} colors,couleurs disponibles pour chacun des produit 
  * @param {string}location,élément select parent dans le DOM où doit être attaché la ou les options de couleur
  */
 export function colorSelector(colors, location) {
     for (let i = 0; i < colors.length; i++) {
-
-        //Création de la balise option
         const colorOption = document.createElement("option");
 
-        //Attribution des valeurs et du texte
         colorOption.setAttribute("value", colors[i]);
         colorOption.textContent = colors[i];
 
-        //Attachement au DOM
         location.appendChild(colorOption);
     }
 }

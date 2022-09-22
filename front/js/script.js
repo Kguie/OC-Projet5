@@ -6,8 +6,10 @@ import { getProducts } from "./api.js";
 
 
 /**
- * Fonction qui génère les cartes produits sur l'index 
- * @param {[Objects]} liste de produits avec toutes leurs caractristiques * 
+ * Fonction qui génère les cartes produits sur l'index
+ * Crée le container de la carte produit
+ * Ajoute chacun des éléments de la carte en les créant puis en les attachant au DOM 
+ * @param {[Objects]} liste de produits avec toutes leurs caractéristiques 
  */
 function loadProducts(products) {
     for (let i = 0; i < products.length; i++) {
@@ -16,7 +18,6 @@ function loadProducts(products) {
         //Création du container de la carte produit
         const productElement = document.createElement("a");
         productElement.href = "./product.html?id=" + products[i]._id;
-        //Attachement au DOM
         productsContainer.appendChild(productElement);
 
         //Ajout de la div article qui contiendra les caractéristiques du produit

@@ -8,7 +8,9 @@ import { addProductToCart } from "./cartManager.js";
 
 /**
  * Fonction qui charge toutes les caractéristiques du produit dans la page du dit produit
- * @param {string} id du produit avec toutes ses caractristiques 
+ * Crée le container de la carte produit
+ * Ajoute chacun des éléments de la carte en les créant puis en les attachant au DOM 
+ * @param {string} id du produit avec toutes ses caractéristiques 
  */
 async function loadDetailedProduct(productId) {
     const product = await getProductById(productId);
@@ -67,4 +69,3 @@ if (search_params.has("id")) {
 } else {
     alert("Nous n'avons pas réussi à trouver le produit sélectionné,veuillez réessayer plus tard ou contacter le service client");
 }
-

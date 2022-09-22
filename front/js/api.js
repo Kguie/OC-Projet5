@@ -5,11 +5,11 @@
 
 /**
  * Fonction qui récupère tous les canapés disponibles sur l'API
+ * Gère les erreurs d'exécution au niveau de l'API
  * @param {url} url de l'API 
  * @return { [objects]|error } produits avec toutes leurs caractéristiques
  */
 export async function getProducts(url) {
-    //Gestion d'erreur d'exécution au niveau de l'API
     try {
         let response = await fetch(url);
         let products = await response.json();
@@ -23,12 +23,12 @@ export async function getProducts(url) {
 
 /**
  * Fonction qui récupère toutes les caractéristiques du produit sur l'API dont on rentre l'id
+ * Gère les erreurs d'exécution au niveau de l'API
+ * @param {url} url de l'API 
  * @param {string} id du produit 
  * @return { object|error } produit avec toutes ses caractéristiques
  */
 export async function getProductById(id) {
-
-    //Gestion d'erreur d'exécution au niveau de l'API 
     try {
         let response = await fetch("http://localhost:3000/api/products/" + id);
         let product = await response.json();

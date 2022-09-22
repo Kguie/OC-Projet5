@@ -5,7 +5,7 @@
 import { getCart, removeProductFromCart, saveCart } from "./cartManager.js";
 import { getProductById, postOrder } from "./api.js";
 import { totalQuantityCalculation, totalPriceCalculation, createOrderBody } from "./orderManager.js";
-import { firstNameIsValid, lastNameIsValid, adressIsValid, cityIsValid, emailIsValid } from "./formManager.js";
+import { firstNameIsValid, lastNameIsValid, addressIsValid, cityIsValid, emailIsValid } from "./formManager.js";
 
 
 /**
@@ -98,7 +98,7 @@ async function loadCard(cartList) {
     );
     productSettings.appendChild(productDeleteContainer);
 
-    //Ajout du bouton de suppresion et de son texte
+    //Ajout du bouton de suppression et de son texte
     let productDelete = document.createElement("p");
     productDelete.classList.add("deleteItem");
     productDelete.textContent = "Supprimer";
@@ -114,15 +114,15 @@ async function loadCard(cartList) {
 //Ajout des event listener
 
 /**
- * Fonction qui ajoute au texte supprimer l'eventListener qui entraine la suppression du produit lors du clic
- * Relance le chargement des articles restants dans le panier après la supression
+ * Fonction qui ajoute au texte supprimer l'eventListener qui entraîne la suppression du produit lors du clic
+ * Relance le chargement des articles restants dans le panier après la suppression
  */
 async function deleteButtonEventListener() {
   const deleteButtons = document.querySelectorAll(".cart__item__content__settings__delete .deleteItem");
   for (let i = 0; i < deleteButtons.length; i++) {
     deleteButtons[i].addEventListener("click", async function () {
 
-      //Récupération des id et couleur sur la balise article parente du boutton supprimer
+      //Récupération des id et couleur sur la balise article parente du bouton supprimer
       const productId = deleteButtons[i].parentNode.parentNode.parentNode.parentNode.dataset.id;
       const productColor = deleteButtons[i].parentNode.parentNode.parentNode.parentNode.dataset.color;
 
@@ -137,9 +137,9 @@ async function deleteButtonEventListener() {
 
 /**
  * Fonction qui permet de modifier la quantité de produit sur l'input document.querySelectorAll('.itemQuantity')
- * Entraine la supression du produit si la quantité passe à 0
- * Relance le chargement de des articles après supression
- * Relance le clalcul et l'affichage de la quantité totale et du prix total après modification
+ * Entraîne la suppression du produit si la quantité passe à 0
+ * Relance le chargement de des articles après suppression
+ * Relance le calcul et l'affichage de la quantité totale et du prix total après modification
  */
 async function changeQuantity() {
   const quantityInputs = document.querySelectorAll('.itemQuantity');
@@ -178,27 +178,27 @@ async function changeQuantity() {
 //Ajout des eventsListener pour le formulaire
 //Vérification du prénom avec l'event change au niveau de son input
 document.querySelector("#firstName").addEventListener("change", function () {
-  document.querySelector("#firstNameErrorMsg").textContent = "";
+  document.querySelector("#firstNameErrorMsg").innerHTML = "";
   firstNameIsValid()
 });
 //Vérification du nom avec l'event change au niveau de son input
 document.querySelector("#lastName").addEventListener("change", function () {
-  document.querySelector("#lastNameErrorMsg").textContent = "";
+  document.querySelector("#lastNameErrorMsg").innerHTML = "";
   lastNameIsValid()
 });
 //Vérification de l'adresse avec l'event change au niveau de son input
 document.querySelector("#address").addEventListener("change", function () {
-  document.querySelector("#addressErrorMsg").textContent = "";
-  adressIsValid()
+  document.querySelector("#addressErrorMsg").innerHTML = "";
+  addressIsValid()
 });
 //Vérification de la ville avec l'event change au niveau de son input
 document.querySelector("#city").addEventListener("change", function () {
-  document.querySelector("#cityErrorMsg").textContent = "";
+  document.querySelector("#cityErrorMsg").innerHTML = "";
   cityIsValid()
 });
 //Vérification du mail avec l'event change au niveau de son input
 document.querySelector("#email").addEventListener("change", function () {
-  document.querySelector("#emailErrorMsg").textContent = "";
+  document.querySelector("#emailErrorMsg").innerHTML = "";
   emailIsValid()
 });
 
@@ -207,10 +207,10 @@ document.querySelector("#order").addEventListener("click", async function (event
   event.preventDefault();
   let firstNameTest = firstNameIsValid();
   let lastNameTest = lastNameIsValid();
-  let adressTest = adressIsValid();
+  let addressTest = addressIsValid();
   let cityTest = cityIsValid();
   let emailTest = emailIsValid();
-  if ((firstNameTest == true) && (lastNameTest == true) && (emailTest == true) && (cityTest == true) && (adressTest == true)) {
+  if ((firstNameTest == true) && (lastNameTest == true) && (emailTest == true) && (cityTest == true) && (addressTest == true)) {
     const orderJson = createOrderBody();
     const id = await postOrder(orderJson);
     //Ouverture de la page confirmation avec l'order id

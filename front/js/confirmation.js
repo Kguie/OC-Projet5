@@ -8,10 +8,8 @@ let str = window.location.href;
 
 //Recherche de l' id de commande par rapport à l'url de la page
 let url = new URL(str);
-let search_params = new URLSearchParams(url.search); 
-if(search_params.has("orderId")) {
+let search_params = new URLSearchParams(url.search);
+if (search_params.has("orderId")) {
     let orderId = search_params.get("orderId");
     document.querySelector("#orderId").textContent = orderId;
 }
-
-
