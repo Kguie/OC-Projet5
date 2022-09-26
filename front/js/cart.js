@@ -12,7 +12,7 @@ import { firstNameIsValid, lastNameIsValid, addressIsValid, cityIsValid, emailIs
  * Fonction qui charge les articles ajoutés au panier précédemment sur la page panier
  * @param {[objects]} cartList 
  */
-async function loadCard(cartList) {
+async function loadCart(cartList) {
 
   for (let i = 0; i < cartList.length; i++) {
     //Récupération des caractéristiques du produit dans le panier
@@ -129,7 +129,7 @@ async function deleteButtonEventListener() {
       removeProductFromCart(productId, productColor);
 
       cartList = getCart();
-      await loadCard(cartList);
+      await loadCart(cartList);
       alert("Votre article a bien été supprimé");
     });
   }
@@ -159,7 +159,7 @@ async function changeQuantity() {
         removeProductFromCart(productId, productColor);
 
         cartList = getCart();
-        await loadCard(cartList);
+        await loadCart(cartList);
         alert("Votre article a bien été supprimé");
       } else {
         productFound.quantity = quantityInputs[i].value;
@@ -233,5 +233,5 @@ let cartList = getCart();
 if (cartList.length == 0) {
   alert("Votre panier est vide");
 } else {
-  await loadCard(cartList);
+  await loadCart(cartList);
 }

@@ -170,17 +170,17 @@ export function cityIsValid() {
  */
 export function emailIsValid() {
     //Mise en place de la regex qui autorise 20 caractères par partie du mail ,sans espace et limité à certains caractères
-    const mailRegex = /^[a-z0-9!#$%&'*+=?^_`~-]{1,20}@[a-z0-9-!#$%&'*+=?^_`~-]{1,20}\.[a-z0-9]{1,20}$/gi;
+    const mailRegex = /^[a-z0-9!#$%&'*+=?^_`~\.-]{1,20}@[a-z0-9-!#$%&'*+=?^_`~-]{1,20}\.[a-z0-9]{1,20}$/gi;
 
     //Ajout de regex pour détecter les erreurs possibles    
     const emptyInput = /^[\s]+$/g;
     //Détection du nombre de caractères dans chacune des partie du mail
     const PartSizeLine = /^([a-z0-9\.!#$%&'*+=?^_`~-]{21,}@[a-z0-9-!#$%&'*+=?^_`~-]{1,20}\.[a-z0-9]{1,20}$)|^[a-z0-9\.!#$%&'*+=?^_`~-]{1,20}@[a-z0-9-!#$%&'*+=?^_`~-]{21,}\.[a-z0-9]{1,20}$|^[a-z0-9\.!#$%&'*+=?^_`~-]{1,20}@[a-z0-9-!#$%&'*+=?^_`~-]{1,20}\.[a-z0-9]{21,}$/gi;
-
     const whiteSpace = /[\s]/g;
     const unauthorized = /[^a-z0-9\.!#$%&'*+=?^_`~\-@]/gi;
-    const oneTimeAuthorized = /(@(.*@)+)|(\.(.*\.)+)/g;
+    const oneTimeAuthorized = /(@(.*@)+)/g;
     const email = document.querySelector("#email").value
+    const periodLimited = /^[a-z0-9!#$%&'*+=?^_`~\.-]{1,20}@.+\..+(\..+)+/g;
     //Test
     const emailTest = mailRegex.test(email);
     const emptyInputTest = emptyInput.test(email);
@@ -203,12 +203,12 @@ export function emailIsValid() {
         document.querySelector("#emailErrorMsg").innerHTML = "Les lettres et chiffres sont autorisées ainsi que les caractères spéciaux suivants:<br> ! # $ % & ' * + = ? ^ _ ` ~ - @ .";
         return 0;
     } if (oneTimeAuthorizedTest == true) {
-        document.querySelector("#emailErrorMsg").innerHTML = "Les caractères '@' et '.' ne peuvent être utilisés qu'une seule fois";
+        document.querySelector("#emailErrorMsg").innerHTML = "Le caractères '@' ne peut être utilisé qu'une seule fois";
         return 0;
     } if (emailTest == true) {
         return 1;
     } else {
-        document.querySelector("#emailErrorMsg").innerHTML = "Veuillez vérifier que votre adresse mail est au bon format adresse@mail.com";
+        document.querySelector("#emailErrorMsg").innerHTML = "Veuillez vérifier que votre adresse mail est valide et au bon format adresse@mail.com<br>Un seul  .  autorisé dans la partie du mail après le  @  ";
         return 0;
     }
 }
